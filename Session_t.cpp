@@ -19,8 +19,24 @@ class Clock {
     virtual std::time_t now() const=0;
 }
 
+class MockClock : public Clock {
+public:
+    MockClock(std::time_t amount)
+    : length(amount) {}
+    
+     virtual std::time_t start() const {
+        return 0
+    }
+
+    virtual std::time_t now() const {
+        return length;
+    }
+private:
+    std::time_t length;
+}
+
 class TenSecondClock : public Clock {
-    public:
+public:
     virtual std::time_t start() const {
         return 0;
     }
@@ -31,7 +47,7 @@ class TenSecondClock : public Clock {
 }
 
 class TenMinuteClock : public Clock {
-    public:
+public:
     virtual std::time_t start() const {
         return 0;
     }
@@ -42,7 +58,7 @@ class TenMinuteClock : public Clock {
 }
 
 class TenHourClock : public Clock {
-    public:
+public:
     virtual std::time_t start() const {
         return 0;
     }
@@ -51,7 +67,7 @@ class TenHourClock : public Clock {
         return 10*60*60;
     }
 }
-class TImeClock : public Clock {
+class TimeClock : public Clock {
 public:
     virtual std::time_t start() const{
         return now();
@@ -96,7 +112,7 @@ int main() {
 
     // 10-second session
     {
-        TenSecondClock clock;
+        MockClock clock(10);
         Session s(clock);
         s.stop();
         assert(s.seconds() == 10);
@@ -104,7 +120,7 @@ int main() {
 
     // 10-minute session
     {
-        TenMinuteClock clock;
+        MockClock clock(600);
         Session s(clock);
         s.stop();
         assert(s.seconds() == 600);
@@ -112,7 +128,7 @@ int main() {
 
     // 10-hour session
     {
-        TenHourClock clock;
+        MockClock clock(600*10);
         Session s(clock);
         s.stop();
         assert(s.seconds() == 600 * 10);
