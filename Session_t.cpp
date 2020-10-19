@@ -14,26 +14,74 @@
 #include <cassert>
 #include <unistd.h>
 
+class Clock {
+    virtual std::time_t start() const= 0;
+    virtual std::time_t now() const=0;
+}
+
+class TenSecondClock : public Clock {
+    public:
+    virtual std::time_t start() const {
+        return 0;
+    }
+
+    virtual std::time_t now() const {
+        return std::time(nullptr);
+    }
+}
+
+class TenMinuteClock : public Clock {
+    public:
+    virtual std::time_t start() const {
+        return 0;
+    }
+
+    virtual std::time_t now() const {
+        return 10*60;
+    }
+}
+
+class TenHourClock : public Clock {
+    public:
+    virtual std::time_t start() const {
+        return 0;
+    }
+
+    virtual std::time_t now() const {
+        return 10*60*60;
+    }
+}
+class TImeClock : public Clock {
+public:
+    virtual std::time_t start() const{
+        return now();
+    }
+
+    virtual std::time_t now() const{
+        return std::time(nullptr); 
+    }
+}
 class Session {
 public:
     // constructor
-    Session()
-        : start_time(std::time(nullptr))
+    Session(const Clock& clock = TimeClock())
+        : start_time(clock.start())
     {}
 
     // stop the session
     void stop() {
-        stop_time = std::time(nullptr);
+        end_time = clock.now();
     }
 
     // elapsed time of the stopped session in seconds
     std::time_t seconds() {
-        return stop_time - start_time;
+        return end_time - start_time;
     }
 
 private:
+    const Clock& clock;
     std::time_t start_time;
-    std::time_t stop_time;
+    std::time_t end_time'
 };
 
 int main() {
@@ -44,6 +92,30 @@ int main() {
         sleep(2);
         s.stop();
         assert(s.seconds() == 2);
+    }  
+
+    // 10-second session
+    {
+        TenSecondClock clock;
+        Session s(clock);
+        s.stop();
+        assert(s.seconds() == 10);
+    }
+
+    // 10-minute session
+    {
+        TenMinuteClock clock;
+        Session s(clock);
+        s.stop();
+        assert(s.seconds() == 600);
+    }
+
+    // 10-hour session
+    {
+        TenHourClock clock;
+        Session s(clock);
+        s.stop();
+        assert(s.seconds() == 600 * 10);
     }
 
     return 0;
